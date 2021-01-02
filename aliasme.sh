@@ -60,7 +60,11 @@ _excute() {
         while read -u9 line; do
             if [ "$1" = "$line" ]; then
                 read -u9 line
-    			eval $line
+                if [ ! -z $2 ]; then
+                    eval $line $2
+                else
+                    eval $line
+                fi
     			return 0
             fi
         done 9< ~/.aliasme/cmd
@@ -127,7 +131,7 @@ al(){
 			echo "aliasme 3.0.0"
 			echo "visit https://github.com/Jintin/aliasme for more information"
 		else
-			if ! _excute $1 ; then
+			if ! _excute $1 $2; then
 				echo "not found"
 			fi
 		fi
