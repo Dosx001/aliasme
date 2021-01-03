@@ -60,7 +60,16 @@ _excute() {
         while read -u9 line; do
             if [ "$1" = "$line" ]; then
                 read -u9 line
-                if [ ! -z $2 ]; then
+                if [ "$2" == "MD" ]; then
+                    cmds=()
+                    for input in $@; do
+                        if [[ $1 != $input ]] && [[ $2 != $input ]]; then
+                            cmds+=$input
+                            cmds+=" "
+                        fi
+                    done
+                    eval $line $cmds
+                elif [ ! -z $2 ]; then
                     eval $line $2
                 else
                     eval $line
@@ -131,7 +140,7 @@ al(){
 			echo "aliasme 3.0.0"
 			echo "visit https://github.com/Jintin/aliasme for more information"
 		else
-			if ! _excute $1 $2; then
+			if ! _excute $@; then
 				echo "not found"
 			fi
 		fi
