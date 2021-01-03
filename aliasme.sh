@@ -67,6 +67,8 @@ _excute() {
                         cmds+=$arg\ 
                     done
                     eval $line $cmds
+                elif [ "$2" == "Fill" ]; then
+                    eval "${line/\?/$3}"
                 elif [ ! -z $2 ]; then
                     eval $line $2
                 else
