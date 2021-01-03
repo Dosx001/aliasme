@@ -60,19 +60,17 @@ _excute() {
         while read -u9 line; do
             if [ "$1" = "$line" ]; then
                 read -u9 line
-                if [ "$2" == "MD" ]; then
-                    cmds=()
-                    for i in $(seq 3 $#); do
-                        eval arg=\$$i
-                        cmds+=$arg\ 
-                    done
-                    eval $line $cmds
-                elif [ "$2" == "F" ]; then
+                if [ "$2" == "F" ]; then
                     eval "${line/\?/$3}"
                 elif [ "$2" == "MF" ]; then
                     eval "${line//\?/$3}"
                 elif [ ! -z $2 ]; then
-                    eval $line $2
+                    cmds=()
+                    for i in $(seq 2 $#); do
+                        eval arg=\$$i
+                        cmds+=$arg\ 
+                    done
+                    eval $line $cmds
                 else
                     eval $line
                 fi
