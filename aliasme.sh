@@ -62,11 +62,9 @@ _excute() {
                 read -u9 line
                 if [ "$2" == "MD" ]; then
                     cmds=()
-                    for input in $@; do
-                        if [[ $1 != $input ]] && [[ $2 != $input ]]; then
-                            cmds+=$input
-                            cmds+=" "
-                        fi
+                    for i in $(seq 3 $#); do
+                        eval arg=\$$i
+                        cmds+=$arg\ 
                     done
                     eval $line $cmds
                 elif [ ! -z $2 ]; then
