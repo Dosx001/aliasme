@@ -140,7 +140,7 @@ al(){
 		if [ $1 = "ls" ]; then
 			_list
 		elif [ $1 = "add" ]; then
-			_add $2 "$3"
+			_add $2 "$3" $4
 		elif [ $1 = "rm" ]; then
 			_remove $2
 		elif [ $1 = "-h" ]; then
