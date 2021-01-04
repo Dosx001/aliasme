@@ -59,10 +59,8 @@ _remove() {
     			read line #skip one more line
     			read cmdType
                 echo "remove $name"
-                echo "remove $cmdType"
     		else
     			echo $line >> ~/.aliasme/cmdtemp
-    			echo $cmdType >> ~/.aliasme/cmdtemp
     		fi
     	done < ~/.aliasme/cmd
     	mv ~/.aliasme/cmdtemp ~/.aliasme/cmd
