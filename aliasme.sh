@@ -30,7 +30,7 @@ _add() {
     elif [ "$3" == "F" ]; then
         cmdType="Fill"
     elif [ "$3" == "MF" ]; then
-        cmdType="Multi Fill"
+        cmdType="Multi Fill $4"
     else
         cmdType="Default"
 	fi
@@ -74,9 +74,9 @@ _excute() {
             if [ "$1" = "$line" ]; then
                 read -u9 line
                 read -u9 cmdType
-                if [ "$cmdType" == "Fill" ]; then
-                    eval "${line/\?/$2}"
-                elif [ "$cmdType" == "Multi Fill" ]; then
+                if [ "$cmdType" == "Default" ]; then
+                    eval $line
+                elif [ "$cmdType" == "Fill" ]; then
                     eval "${line//\?/$2}"
                 elif [ "$cmdType" == "Dynamic" ]; then
                     cmds=()
@@ -86,6 +86,12 @@ _excute() {
                     done
                     eval $line $cmds
                 else
+                    fills=(${cmdType// / })
+                    for i in $(seq 1 ${fills[2]}); do
+                        let num=$i+1
+                        eval arg=\$$num
+                        line=${line//\?$i/$arg}
+                    done
                     eval $line
                 fi
     			return 0
@@ -140,7 +146,7 @@ al(){
 		if [ $1 = "ls" ]; then
 			_list
 		elif [ $1 = "add" ]; then
-			_add $2 "$3" $4
+			_add $2 "$3" $4 $5
 		elif [ $1 = "rm" ]; then
 			_remove $2
 		elif [ $1 = "-h" ]; then
