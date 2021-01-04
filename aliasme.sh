@@ -6,7 +6,8 @@ _list() {
 		while read name
 		do
 			read value
-			echo "$name : $value"
+			read cmdType
+            echo "$name ($cmdType) : $value"
 		done < ~/.aliasme/cmd
 	fi
 }
@@ -24,8 +25,19 @@ _add() {
 		read -ep "Input cmd to add:" cmd
 	fi
 
+    if [ "$3" == "D" ];then
+        cmdType="Dynamic"
+    elif [ "$3" == "F" ]; then
+        cmdType="Fill"
+    elif [ "$3" == "MF" ]; then
+        cmdType="Multi Fill"
+    else
+        cmdType="Default"
+	fi
+
 	echo $name >> ~/.aliasme/cmd
 	echo $cmd >> ~/.aliasme/cmd
+	echo $cmdType >> ~/.aliasme/cmd
     echo "add: $name -> $cmd"
 
 	_autocomplete
@@ -45,9 +57,12 @@ _remove() {
     	do
     		if [ "$line" = "$name" ]; then
     			read line #skip one more line
+    			read cmdType
                 echo "remove $name"
+                echo "remove $cmdType"
     		else
     			echo $line >> ~/.aliasme/cmdtemp
+    			echo $cmdType >> ~/.aliasme/cmdtemp
     		fi
     	done < ~/.aliasme/cmd
     	mv ~/.aliasme/cmdtemp ~/.aliasme/cmd
@@ -60,11 +75,12 @@ _excute() {
         while read -u9 line; do
             if [ "$1" = "$line" ]; then
                 read -u9 line
-                if [ "$2" == "F" ]; then
-                    eval "${line/\?/$3}"
-                elif [ "$2" == "MF" ]; then
-                    eval "${line//\?/$3}"
-                elif [ ! -z $2 ]; then
+                read -u9 cmdType
+                if [ "$cmdType" == "Fill" ]; then
+                    eval "${line/\?/$2}"
+                elif [ "$cmdType" == "Multi Fill" ]; then
+                    eval "${line//\?/$2}"
+                elif [ "$cmdType" == "Dynamic" ]; then
                     cmds=()
                     for i in $(seq 2 $#); do
                         eval arg=\$$i
