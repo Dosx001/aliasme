@@ -107,6 +107,7 @@ _bashauto()
     	do
     		opts+=" $line"
     		read line
+    		read line
     	done < ~/.aliasme/cmd
     fi
 	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
