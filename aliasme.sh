@@ -89,9 +89,9 @@ _excute() {
                         eval arg=\$$i
                         cmds+=$arg\ 
                     done
-                    eval "${line//\?/$cmds}"
+                    eval ${line//\?/$cmds}
                 else
-                    fills=(${cmdType// / })
+                    fills=($cmdType)
                     for i in $(seq 1 ${fills[2]}); do
                         let num=$i+1
                         eval arg=\$$num
