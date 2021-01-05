@@ -25,11 +25,11 @@ _add() {
 		read -ep "Input cmd to add:" cmd
 	fi
 
-    if [ "$3" == "D" ];then
+    if [ "$3" == "d" ];then
         cmdType="Dynamic"
-    elif [ "$3" == "F" ]; then
+    elif [ "$3" == "f" ]; then
         cmdType="Fill"
-    elif [ "$3" == "MF" ]; then
+    elif [ "$3" == "m" ]; then
         cmdType="Multi Fill $4"
     else
         cmdType="Default"
@@ -76,8 +76,6 @@ _excute() {
                 read -u9 cmdType
                 if [ "$cmdType" == "Default" ]; then
                     eval $line
-                elif [ "$cmdType" == "Fill" ]; then
-                    eval "${line//\?/$2}"
                 elif [ "$cmdType" == "Dynamic" ]; then
                     cmds=()
                     for i in $(seq 2 $#); do
@@ -85,6 +83,13 @@ _excute() {
                         cmds+=$arg\ 
                     done
                     eval $line $cmds
+                elif [ "$cmdType" == "Fill" ]; then
+                    cmds=()
+                    for i in $(seq 2 $#); do
+                        eval arg=\$$i
+                        cmds+=$arg\ 
+                    done
+                    eval "${line//\?/$cmds}"
                 else
                     fills=(${cmdType// / })
                     for i in $(seq 1 ${fills[2]}); do
