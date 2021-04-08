@@ -7,7 +7,7 @@ _list() {
 		do
 			read value
 			read cmdType
-            echo "$name ($cmdType) : $value"
+            echo "$name ($cmdType): $value"
 		done < ~/.aliasme/cmd
 	fi
 }
@@ -25,22 +25,24 @@ _add() {
 		read -ep "Input cmd to add:" cmd
 	fi
 
-    if [ "$3" == "d" ];then
-        cmdType="Dynamic"
-    elif [ "$3" == "f" ]; then
-        cmdType="Fill"
-    elif [ "$3" == "m" ]; then
-        cmdType="Multi Fill $4"
-    else
-        cmdType="Default"
-	fi
+    case $3 in
+        "d")
+            cmdType="Dynamic";;
+        "f")
+            cmdType="Fill";;
+        "m")
+            cmdType="Multi Fill $4";;
+        "")
+            cmdType="Default";;
+        *)
+            cmdType="";;
+    esac
 
-	echo $name >> ~/.aliasme/cmd
-	echo $cmd >> ~/.aliasme/cmd
-	echo $cmdType >> ~/.aliasme/cmd
+    echo $name >> ~/.aliasme/cmd
+    echo $cmd >> ~/.aliasme/cmd
+    echo $cmdType >> ~/.aliasme/cmd
     echo "add: $name -> $cmd"
-
-	_autocomplete
+    _autocomplete
 }
 
 _remove() {
@@ -74,31 +76,32 @@ _excute() {
             if [ "$1" = "$line" ]; then
                 read -u9 line
                 read -u9 cmdType
-                if [ "$cmdType" == "Default" ]; then
-                    eval $line
-                elif [ "$cmdType" == "Dynamic" ]; then
-                    cmds=()
-                    for i in $(seq 2 $#); do
-                        eval arg=\$$i
-                        cmds+=$arg\ 
-                    done
-                    eval $line $cmds
-                elif [ "$cmdType" == "Fill" ]; then
-                    cmds=()
-                    for i in $(seq 2 $#); do
-                        eval arg=\$$i
-                        cmds+=$arg\ 
-                    done
-                    eval ${line//\?/$cmds}
-                else
-                    fills=($cmdType)
-                    for i in $(seq 1 ${fills[2]}); do
-                        let num=$i+1
-                        eval arg=\$$num
-                        line=${line//\?$i/$arg}
-                    done
-                    eval $line
-                fi
+                case $cmdType in
+                    "Default")
+                        eval $line;;
+                    "Dynamic")
+                        cmds=()
+                        for i in $(seq 2 $#); do
+                            eval arg=\$$i
+                            cmds+=$arg\ 
+                        done
+                        eval $line $cmds;;
+                    "Fill")
+                        cmds=()
+                        for i in $(seq 2 $#); do
+                            eval arg=\$$i
+                            cmds+=$arg\ 
+                        done
+                        eval ${line//\?/$cmds};;
+                    *)
+                        fills=($cmdType)
+                        for i in $(seq 1 ${fills[2]}); do
+                            let num=$i+1
+                            eval arg=\$$num
+                            line=${line//\?$i/$arg}
+                        done
+                        eval $line;;
+                esac
     			return 0
             fi
         done 9< ~/.aliasme/cmd
@@ -148,27 +151,28 @@ _autocomplete
 
 al(){
 	if [ ! -z $1 ]; then
-		if [ $1 = "ls" ]; then
-			_list
-		elif [ $1 = "add" ]; then
-			_add $2 "$3" $4 $5
-		elif [ $1 = "rm" ]; then
-			_remove $2
-		elif [ $1 = "-h" ]; then
-			echo "Usage:"
-			echo "al add [name] [command]      # add alias command with name"
-			echo "al rm [name]                 # remove alias by name"
-			echo "al ls                        # alias list"
-			echo "al [name]                    # execute alias associate with [name]"
-			echo "al -v                        # version information"
-			echo "al -h                        # help"
-		elif [ $1 = "-v" ]; then
-			echo "aliasme 3.0.0"
-			echo "visit https://github.com/Jintin/aliasme for more information"
-		else
-			if ! _excute $@; then
-				echo "not found"
-			fi
-		fi
+        case $1 in
+            "ls")
+                _list;;
+            "add")
+                _add $2 "$3" $4 $5;;
+            "rm")
+                _remove $2;;
+            "-h")
+                echo "Usage:"
+                echo "al add [name] [command] [type] # add alias command with name"
+                echo "al rm [name]                   # remove alias by name"
+                echo "al ls                          # alias list"
+                echo "al [name]                      # execute alias associate with [name]"
+                echo "al -v                          # version information"
+                echo "al -h                          # help";;
+            "-v")
+                echo "aliasme 3.0.0"
+                echo "visit https://github.com/Jintin/aliasme for more information";;
+            *)
+                if ! _excute $@; then
+                    echo "not found"
+                fi
+        esac
 	fi
 }
