@@ -167,8 +167,8 @@ al(){
                 echo "al -v                          # version information"
                 echo "al -h                          # help";;
             "-v")
-                echo "aliasme 3.0.0"
-                echo "visit https://github.com/Jintin/aliasme for more information";;
+                echo "aliasme 4.0.0"
+                echo "visit https://github.com/Dosx001/aliasme for more information";;
             *)
                 if ! _excute $@; then
                     echo "not found"
